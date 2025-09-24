@@ -1,0 +1,38 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2025-01-27T12:00:00+00:00",
+  "id": "flutter-bottom-navigation-codelab",
+  "duration": 30,
+  "title": "Building Flutter Bottom Navigation with Organized File Structure",
+  "summary": "Learn how to build a complete Flutter app with bottom navigation, organized into separate files for better code management. Perfect for beginners!",
+  "source": "flutter-bottom-navigation-codelab.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "codelab",
+    "flutter",
+    "mobile-development",
+    "dart"
+  ],
+  "tags": [
+    "flutter",
+    "dart",
+    "mobile",
+    "ui",
+    "navigation",
+    "file-structure"
+  ],
+  "feedback": "https://github.com/your-repo",
+  "url": "flutter-bottom-navigation-codelab"
+}
+
+
+
+
+
+

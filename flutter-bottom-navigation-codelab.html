@@ -1,0 +1,816 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Building Flutter Bottom Navigation with Organized File Structure</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success { color: #1e8e3e; }
+    .error { color: red; }
+    #done, #arrow-back { display: none !important; }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14" ga4id=""></google-codelab-analytics>
+  <google-codelab codelab-gaid="" codelab-ga4id="" id="flutter-bottom-navigation-codelab" title="Building Flutter Bottom Navigation with Organized File Structure" environment="web" feedback-link="https://github.com/your-repo">
+    
+    <google-codelab-step label="Overview" duration="2">
+      <p>Welcome to your Flutter bottom navigation tutorial! In this codelab, we'll build a complete app with bottom navigation, organized into separate files for better code management.</p>
+      
+      <h2 is-upgraded>What We're Making</h2>
+      <p>A complete app with bottom navigation, but organized into separate files for easier management:</p>
+      <ul>
+        <li>5 different pages (Home, About, Projects, Gallery, Contact)</li>
+        <li>Bottom navigation bar to switch between pages</li>
+        <li>Organized file structure for better code management</li>
+        <li>Professional UI with cards, lists, and grids</li>
+      </ul>
+      
+      <h2 is-upgraded>File Structure</h2>
+      <pre><code>lib/
+├── main.dart                 (Main app entry point)
+├── navigation.dart           (Bottom navigation controller)
+└── pages/
+    ├── home_page.dart       (Homepage content)
+    ├── about_page.dart      (About me page)
+    ├── projects_page.dart   (My projects page)
+    ├── gallery_page.dart    (Gallery page)
+    └── contact_page.dart    (Contact me page)</code></pre>
+      
+      <h2 is-upgraded>What you'll learn</h2>
+      <ul>
+        <li>How to organize Flutter code into separate files</li>
+        <li>How to create bottom navigation with PageView</li>
+        <li>How to build different types of pages (lists, grids, cards)</li>
+        <li>How to create data models and reusable components</li>
+        <li>How to manage state in navigation</li>
+      </ul>
+    </google-codelab-step>
+    
+    <google-codelab-step label="Step 1: Set up the Basic App Structure" duration="4">
+      <p>What we're doing: Creating the main app entry point - this is where our app starts and sets up the basic configuration.</p>
+      
+      <h2 is-upgraded>Create a new Flutter project</h2>
+      <pre><code language="language-bash">flutter create my_portfolio_app
+cd my_portfolio_app</code></pre>
+      
+      <h2 is-upgraded>Create the main.dart file</h2>
+      <p>Replace the contents of <code>lib/main.dart</code> with the following code:</p>
+      
+      <pre><code language="language-dart">import 'package:flutter/material.dart';
+import 'navigation.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'My Portfolio App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: MainNavigationPage(),
+    );
+  }
+}</code></pre>
+      
+      <h2 is-upgraded>Why this syntax:</h2>
+      <ul>
+        <li><code>import 'navigation.dart';</code> - We import our navigation file that we'll create next</li>
+        <li><code>MaterialApp</code> - This creates our app with Material Design styling and themes</li>
+        <li><code>theme: ThemeData()</code> - This sets up the app's color scheme and visual properties</li>
+        <li><code>primarySwatch: Colors.blue</code> - This creates a blue color palette for the entire app</li>
+        <li><code>visualDensity: VisualDensity.adaptivePlatformDensity</code> - This makes the UI adapt to different screen densities</li>
+        <li><code>home: MainNavigationPage()</code> - This sets our navigation page as the main screen</li>
+      </ul>
+      
+      <p><strong>Expected Output:</strong> App structure ready, but we need to create the other files.</p>
+    </google-codelab-step>
+    
+    <google-codelab-step label="Step 2: Create the Navigation Controller" duration="6">
+      <p>What we're doing: Creating the navigation system that manages all pages - this handles switching between different screens.</p>
+      
+      <h2 is-upgraded>Create the navigation.dart file</h2>
+      <p>Create a new file <code>lib/navigation.dart</code> with the following code:</p>
+      
+      <pre><code language="language-dart">import 'package:flutter/material.dart';
+import 'pages/home_page.dart';
+import 'pages/about_page.dart';
+import 'pages/projects_page.dart';
+import 'pages/gallery_page.dart';
+import 'pages/contact_page.dart';
+
+class MainNavigationPage extends StatefulWidget {
+  @override
+  _MainNavigationPageState createState() => _MainNavigationPageState();
+}
+
+class _MainNavigationPageState extends State<MainNavigationPage> {
+  int _selectedIndex = 2; // Start with Homepage (center tab)
+  PageController _pageController = PageController(initialPage: 2);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+        controller: _pageController,
+        children: [
+          AboutPage(),
+          ProjectsPage(),
+          HomePage(),
+          GalleryPage(),
+          ContactPage(),
+        ],
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: _onTabTapped,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        elevation: 8.0,
+        backgroundColor: Colors.white,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'About Me'),
+          BottomNavigationBarItem(icon: Icon(Icons.work), label: 'Projects'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.photo_library), label: 'Gallery'),
+          BottomNavigationBarItem(icon: Icon(Icons.contact_mail), label: 'Contact'),
+        ],
+      ),
+    );
+  }
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+}</code></pre>
+      
+      <h2 is-upgraded>Key Concepts Explained:</h2>
+      <ul>
+        <li><code>StatefulWidget</code> - A widget that can change over time (needed for navigation state)</li>
+        <li><code>PageController</code> - Controls which page is currently visible in PageView</li>
+        <li><code>PageView</code> - A scrollable widget that displays pages horizontally</li>
+        <li><code>BottomNavigationBar</code> - The bottom navigation bar with tabs</li>
+        <li><code>setState()</code> - Tells Flutter to rebuild the widget when state changes</li>
+        <li><code>animateToPage()</code> - Smoothly animates to a specific page</li>
+        <li><code>dispose()</code> - Cleans up resources when the widget is destroyed</li>
+      </ul>
+      
+      <p><strong>Expected Output:</strong> Navigation structure ready, but we need to create the individual page files.</p>
+    </google-codelab-step>
+    
+    <google-codelab-step label="Step 3: Create the Homepage" duration="4">
+      <p>What we're doing: Creating the homepage content - this is the main landing page of our app.</p>
+      
+      <h2 is-upgraded>Create the pages directory and home_page.dart</h2>
+      <p>First, create the pages directory:</p>
+      <pre><code language="language-bash">mkdir lib/pages</code></pre>
+      
+      <p>Create <code>lib/pages/home_page.dart</code>:</p>
+      
+      <pre><code language="language-dart">import 'package:flutter/material.dart';
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Welcome Home'),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Main welcome icon
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Icon(Icons.home, size: 100, color: Colors.blue),
+              ),
+              SizedBox(height: 30),
+              
+              // Welcome title
+              Text(
+                'Welcome to My Portfolio!',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 15),
+              
+              // Subtitle
+              Text(
+                'Explore my work and get to know me better',
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              
+              // Quick navigation cards
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildQuickNavCard(Icons.person, 'About', Colors.green),
+                  _buildQuickNavCard(Icons.work, 'Projects', Colors.orange),
+                  _buildQuickNavCard(Icons.contact_mail, 'Contact', Colors.purple),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickNavCard(IconData icon, String label, Color color) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 30, color: color),
+          SizedBox(height: 8),
+          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color)),
+        ],
+      ),
+    );
+  }
+}</code></pre>
+      
+      <h2 is-upgraded>Key Concepts Explained:</h2>
+      <ul>
+        <li><code>StatelessWidget</code> - A widget that doesn't change over time (static content)</li>
+        <li><code>withOpacity(0.1)</code> - Makes a color semi-transparent (10% opacity)</li>
+        <li><code>BorderRadius.circular()</code> - Creates rounded corners</li>
+        <li><code>MainAxisAlignment.spaceEvenly</code> - Distributes space evenly between children</li>
+        <li><code>_buildQuickNavCard()</code> - A helper method to create reusable UI components</li>
+        <li><code>IconData</code> - A data type for Material Design icons</li>
+      </ul>
+      
+      <p><strong>Expected Output:</strong> Beautiful homepage with welcome message and quick navigation cards.</p>
+    </google-codelab-step>
+    
+    <google-codelab-step label="Step 4: Create the About Page" duration="4">
+      <p>What we're doing: Creating the about me page - this displays personal information and profile details.</p>
+      
+      <h2 is-upgraded>Create about_page.dart</h2>
+      <p>Create <code>lib/pages/about_page.dart</code>:</p>
+      
+      <pre><code language="language-dart">import 'package:flutter/material.dart';
+
+class AboutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('About Me'),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              
+              // Profile picture
+              Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.blue, width: 4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.network(
+                    'https://picsum.photos/300/300?random=1',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SizedBox(height: 25),
+              
+              // Name and title
+              Text('Alex Johnson', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87)),
+              SizedBox(height: 8),
+              Text('Flutter Developer', style: TextStyle(fontSize: 18, color: Colors.blue, fontWeight: FontWeight.w500)),
+              SizedBox(height: 30),
+              
+              // About me card
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('About Me', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    SizedBox(height: 15),
+                    Text(
+                      'Hello! I\'m Alex, a passionate Flutter developer who loves creating beautiful and functional mobile applications. I enjoy turning complex problems into simple, beautiful designs.\n\nWhen I\'m not coding, you can find me exploring new technologies, reading tech blogs, or enjoying a good cup of coffee.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey[700], height: 1.6),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}</code></pre>
+      
+      <h2 is-upgraded>Key Concepts Explained:</h2>
+      <ul>
+        <li><code>SingleChildScrollView</code> - Makes content scrollable when it exceeds screen height</li>
+        <li><code>BoxShape.circle</code> - Creates a circular shape for the container</li>
+        <li><code>ClipOval</code> - Clips the image into a perfect circle</li>
+        <li><code>BoxShadow</code> - Adds shadow effects for depth and visual appeal</li>
+        <li><code>CrossAxisAlignment.start</code> - Aligns children to the left side</li>
+        <li><code>height: 1.6</code> - Sets line spacing for better text readability</li>
+      </ul>
+      
+      <p><strong>Expected Output:</strong> Professional about page with circular profile image and detailed description.</p>
+    </google-codelab-step>
+    
+    <google-codelab-step label="Step 5: Create the Projects Page" duration="6">
+      <p>What we're doing: Creating the projects showcase - this displays a list of projects with detailed information.</p>
+      
+      <h2 is-upgraded>Create projects_page.dart</h2>
+      <p>Create <code>lib/pages/projects_page.dart</code>:</p>
+      
+      <pre><code language="language-dart">import 'package:flutter/material.dart';
+
+class ProjectsPage extends StatelessWidget {
+  final List<Project> projects = [
+    Project(title: 'Weather App', description: 'A beautiful weather forecasting app with real-time updates', icon: Icons.cloud, color: Colors.blue),
+    Project(title: 'Todo List', description: 'Task management made simple with intuitive design', icon: Icons.check_box, color: Colors.green),
+    Project(title: 'Recipe Finder', description: 'Discover amazing recipes from around the world', icon: Icons.restaurant, color: Colors.orange),
+    Project(title: 'Chat App', description: 'Real-time messaging with modern UI/UX', icon: Icons.chat, color: Colors.purple),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('My Projects'),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        padding: EdgeInsets.all(16.0),
+        itemCount: projects.length,
+        itemBuilder: (context, index) {
+          return _buildProjectCard(projects[index]);
+        },
+      ),
+    );
+  }
+
+  Widget _buildProjectCard(Project project) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16.0),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              // Project icon
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: project.color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(project.icon, size: 30, color: project.color),
+              ),
+              SizedBox(width: 16),
+              
+              // Project details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(project.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
+                    SizedBox(height: 4),
+                    Text(project.description, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                  ],
+                ),
+              ),
+              
+              // Arrow icon
+              Icon(Icons.arrow_forward_ios, color: Colors.grey[400], size: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Project data model
+class Project {
+  final String title;
+  final String description;
+  final IconData icon;
+  final Color color;
+
+  Project({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.color,
+  });
+}</code></pre>
+      
+      <h2 is-upgraded>Key Concepts Explained:</h2>
+      <ul>
+        <li><code>ListView.builder</code> - Efficiently builds a scrollable list of items (only creates visible items)</li>
+        <li><code>itemCount</code> - Tells the ListView how many items to display</li>
+        <li><code>itemBuilder</code> - Function that creates each list item (called for each visible item)</li>
+        <li><code>Card</code> - Material Design card widget with elevation and rounded corners</li>
+        <li><code>RoundedRectangleBorder</code> - Creates rounded rectangle borders for widgets</li>
+        <li><code>Expanded</code> - Takes up remaining space in a Row or Column</li>
+        <li><code>Data Model (Project class)</code> - Custom class to structure project data</li>
+        <li><code>required</code> - Makes parameters mandatory when creating an instance</li>
+        <li><code>final</code> - Makes variables immutable (cannot be changed after assignment)</li>
+      </ul>
+      
+      <h2 is-upgraded>Where ListView.builder is commonly used:</h2>
+      <ul>
+        <li>Social media feeds (posts, comments)</li>
+        <li>Product catalogs in e-commerce apps</li>
+        <li>Search results lists</li>
+        <li>Settings pages with multiple options</li>
+        <li>Chat message lists</li>
+        <li>Any scrollable list with dynamic content</li>
+      </ul>
+      
+      <p><strong>Expected Output:</strong> Organized project list with colorful icons and descriptions.</p>
+    </google-codelab-step>
+    
+    <google-codelab-step label="Step 6: Create the Gallery Page" duration="4">
+      <p>What we're doing: Creating the image gallery - this displays images in a grid layout.</p>
+      
+      <h2 is-upgraded>Create gallery_page.dart</h2>
+      <p>Create <code>lib/pages/gallery_page.dart</code>:</p>
+      
+      <pre><code language="language-dart">import 'package:flutter/material.dart';
+
+class GalleryPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Gallery'),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8.0,
+            mainAxisSpacing: 8.0,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: 12,
+          itemBuilder: (context, index) {
+            return _buildGalleryItem(index);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGalleryItem(int index) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              'https://picsum.photos/400/400?random=${index + 10}',
+              fit: BoxFit.cover,
+            ),
+            // Gradient overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.3),
+                  ],
+                ),
+              ),
+            ),
+            // Image number
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${index + 1}',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}</code></pre>
+      
+      <h2 is-upgraded>Key Concepts Explained:</h2>
+      <ul>
+        <li><code>GridView.builder</code> - Creates a scrollable grid of widgets (only creates visible items)</li>
+        <li><code>SliverGridDelegateWithFixedCrossAxisCount</code> - Defines grid layout with fixed number of columns</li>
+        <li><code>crossAxisCount: 2</code> - Sets number of columns in the grid</li>
+        <li><code>crossAxisSpacing</code> - Space between columns</li>
+        <li><code>mainAxisSpacing</code> - Space between rows</li>
+        <li><code>childAspectRatio: 1.0</code> - Makes grid items square (width = height)</li>
+        <li><code>Stack</code> - Overlays widgets on top of each other</li>
+        <li><code>StackFit.expand</code> - Makes all children fill the entire stack</li>
+        <li><code>LinearGradient</code> - Creates a gradient from one color to another</li>
+        <li><code>Positioned</code> - Positions a child widget at specific coordinates in a Stack</li>
+        <li><code>EdgeInsets.symmetric()</code> - Creates padding with same horizontal and vertical values</li>
+      </ul>
+      
+      <h2 is-upgraded>Where GridView.builder is commonly used:</h2>
+      <ul>
+        <li>Photo galleries and image grids</li>
+        <li>Product catalogs in e-commerce</li>
+        <li>Icon grids in settings pages</li>
+        <li>Dashboard widgets</li>
+        <li>Social media post grids</li>
+        <li>Any grid-based layout with multiple items</li>
+      </ul>
+      
+      <p><strong>Expected Output:</strong> Beautiful 2-column grid gallery with rounded corners and image numbers.</p>
+    </google-codelab-step>
+    
+    <google-codelab-step label="Step 7: Create the Contact Page" duration="4">
+      <p>What we're doing: Creating the contact information page - this displays contact details in an organized way.</p>
+      
+      <h2 is-upgraded>Create contact_page.dart</h2>
+      <p>Create <code>lib/pages/contact_page.dart</code>:</p>
+      
+      <pre><code language="language-dart">import 'package:flutter/material.dart';
+
+class ContactPage extends StatelessWidget {
+  final List<ContactInfo> contactItems = [
+    ContactInfo(Icons.email, 'Email', 'alex@example.com', Colors.red),
+    ContactInfo(Icons.phone, 'Phone', '+1 234 567 8900', Colors.green),
+    ContactInfo(Icons.location_on, 'Location', 'San Francisco, CA', Colors.blue),
+    ContactInfo(Icons.language, 'Website', 'www.alexjohnson.dev', Colors.purple),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Contact Me'),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              
+              // Contact header
+              Container(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Icon(Icons.contact_mail, size: 80, color: Colors.blue),
+                    SizedBox(height: 20),
+                    Text('Get In Touch', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87)),
+                    SizedBox(height: 10),
+                    Text('Feel free to reach out to me through any of these channels', style: TextStyle(fontSize: 16, color: Colors.grey[600]), textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+              
+              SizedBox(height: 20),
+              
+              // Contact items
+              ...contactItems.map((item) => _buildContactItem(item)).toList(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactItem(ContactInfo info) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16.0),
+      padding: EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+      ),
+      child: Row(
+        children: [
+          // Icon container
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: info.color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(info.icon, color: info.color, size: 24),
+          ),
+          SizedBox(width: 16),
+          
+          // Contact details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(info.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+                SizedBox(height: 4),
+                Text(info.value, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Contact info data model
+class ContactInfo {
+  final IconData icon;
+  final String title;
+  final String value;
+  final Color color;
+
+  ContactInfo(this.icon, this.title, this.value, this.color);
+}</code></pre>
+      
+      <h2 is-upgraded>Key Concepts Explained:</h2>
+      <ul>
+        <li><code>...contactItems.map()</code> - Spread operator that expands a list of widgets</li>
+        <li><code>map()</code> - Transforms each item in a list to a new item</li>
+        <li><code>toList()</code> - Converts the mapped result back to a list</li>
+        <li><code>EdgeInsets.only()</code> - Creates padding with specific sides only</li>
+        <li><code>Constructor shorthand</code> - ContactInfo(this.icon, this.title, this.value, this.color) is shorthand for a constructor that assigns parameters to instance variables</li>
+      </ul>
+      
+      <h2 is-upgraded>Where the spread operator (...) is commonly used:</h2>
+      <ul>
+        <li>Combining multiple lists into one</li>
+        <li>Adding multiple widgets to a Column or Row</li>
+        <li>Merging arrays in data processing</li>
+        <li>Creating dynamic widget lists from data</li>
+        <li>Passing multiple arguments to functions</li>
+      </ul>
+      
+      <p><strong>Expected Output:</strong> Clean contact page with colorful contact cards.</p>
+    </google-codelab-step>
+    
+    <google-codelab-step label="How to Run This Organized App" duration="2">
+      <h2 is-upgraded>Complete Setup Instructions</h2>
+      <p>Now that you have all the files, here's how to run your organized app:</p>
+      
+      <ol>
+        <li>Make sure all files are created in the correct locations</li>
+        <li>Run the app:</li>
+      </ol>
+      
+      <pre><code language="language-bash">flutter run</code></pre>
+      
+      <h2 is-upgraded>Benefits of This File Structure</h2>
+      <ul>
+        <li>✅ <strong>Easy to Maintain:</strong> Each page is in its own file</li>
+        <li>✅ <strong>Team Friendly:</strong> Different developers can work on different pages</li>
+        <li>✅ <strong>Reusable:</strong> Pages can be imported into other projects</li>
+        <li>✅ <strong>Organized:</strong> Clear separation of concerns</li>
+        <li>✅ <strong>Scalable:</strong> Easy to add more pages or features</li>
+      </ul>
+    </google-codelab-step>
+    
+    <google-codelab-step label="What You've Learned" duration="2">
+      <h2 is-upgraded>Key Flutter Concepts</h2>
+      <ul>
+        <li><strong>File organization:</strong> Separating code into logical files for better maintainability</li>
+        <li><strong>Import/Export:</strong> How to use code from different files</li>
+        <li><strong>Data models:</strong> Creating custom classes for structured data</li>
+        <li><strong>Modular design:</strong> Building reusable components</li>
+        <li><strong>Clean architecture:</strong> Separating navigation from page content</li>
+        <li><strong>ListView.builder:</strong> Efficient list creation for dynamic content</li>
+        <li><strong>GridView.builder:</strong> Grid layout for organized content display</li>
+        <li><strong>State management:</strong> Managing navigation state with StatefulWidget</li>
+      </ul>
+      
+      <h2 is-upgraded>Congratulations! 🎉</h2>
+      <p>You now have a well-organized, professional Flutter app with bottom navigation! You've learned how to structure code properly and create different types of pages.</p>
+      
+      <h2 is-upgraded>Next Steps</h2>
+      <ul>
+        <li>Add more interactive features like navigation between pages</li>
+        <li>Implement state management solutions like Provider or Bloc</li>
+        <li>Add animations and transitions</li>
+        <li>Create more complex data models</li>
+        <li>Build custom widgets for reusable components</li>
+      </ul>
+    </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+
